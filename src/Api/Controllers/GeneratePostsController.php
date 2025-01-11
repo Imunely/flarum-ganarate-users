@@ -65,14 +65,14 @@ class GeneratePostsController implements RequestHandlerInterface
         ->toArray();
 
         $number_for_sort = Post::query()
-        ->orderBy('number')
+        ->orderBy('number', 'desc')
         ->first()->value('number');
 
         $previosTime = $startTime;
 
         for ($i = 0; $i < $count; $i++) {
 
-            $number_for_sort ++;
+            ++$number_for_sort;
 
             $reviewText = '<t><p>' . $Reviews[$i] . '</p></t>'; // тут в теги оберунть для отображения
 
@@ -95,12 +95,12 @@ class GeneratePostsController implements RequestHandlerInterface
             $posts[] = $post;
         }
 
-        $this->bulkInsertUsers($posts);
+        $this->bulkInsertPosts($posts);
 
         return $users;
     }
 
-    private function bulkInsertUsers(array $posts): void
+    private function bulkInsertPosts(array $posts): void
     {
         $chunks = array_chunk($posts, 100);
         foreach ($chunks as $chunk) {
