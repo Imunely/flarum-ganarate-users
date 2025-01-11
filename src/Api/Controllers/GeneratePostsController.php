@@ -64,7 +64,7 @@ class GeneratePostsController implements RequestHandlerInterface
         ->pluck('id')
         ->toArray();
 
-        $number_for_sort = User::query()
+        $number_for_sort = Post::query()
         ->orderBy('number', 'desc')
         ->first()->value('number');
 
