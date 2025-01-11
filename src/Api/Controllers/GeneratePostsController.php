@@ -66,13 +66,11 @@ class GeneratePostsController implements RequestHandlerInterface
 
         $number_for_sort = Post::query()
         ->orderBy('number', 'desc')
-        ->first()->value('number');
+        ->take(1)->first()->value('number');
 
         $previosTime = $startTime;
 
         for ($i = 0; $i < $count; $i++) {
-
-            ++$number_for_sort;
 
             $reviewText = '<t><p>' . $Reviews[$i] . '</p></t>'; // тут в теги оберунть для отображения
 
@@ -81,7 +79,7 @@ class GeneratePostsController implements RequestHandlerInterface
 
 
             $post = [
-                'number' => $number_for_sort,
+                'number' => ++$number_for_sort,
                 'discussion_id' => $discussion_id,
                 'created_at' => $newTime,
                 'user_id' => $users[$i], // Рандом с таблицы юзерс, но не админ и не автор поста
