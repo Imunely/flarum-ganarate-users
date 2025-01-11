@@ -69,7 +69,7 @@ class GeneratePostsController implements RequestHandlerInterface
         for ($i = 0; $i < $count; $i++) {
             $reviewText = '<t><p>' . $Reviews[$i] . '</p></t>'; // тут в теги оберунть для отображения
 
-            $randomMinutes=rand(1, 3);
+            $randomMinutes=rand(1, 43);
             $newTime=$previosTime->copy()->addMinutes($randomMinutes);
 
 
