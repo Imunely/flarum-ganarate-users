@@ -65,12 +65,13 @@ class GeneratePostsController implements RequestHandlerInterface
         ->toArray();
 
         $number_for_sort = Post::query()
-        ->orderBy('number', 'desc')
+        ->orderBy('number')
         ->first()->value('number');
 
         $previosTime = $startTime;
 
         for ($i = 0; $i < $count; $i++) {
+
             $number_for_sort ++;
 
             $reviewText = '<t><p>' . $Reviews[$i] . '</p></t>'; // тут в теги оберунть для отображения
