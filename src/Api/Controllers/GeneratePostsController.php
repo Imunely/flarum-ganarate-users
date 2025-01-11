@@ -65,7 +65,7 @@ class GeneratePostsController implements RequestHandlerInterface
         ->toArray();
 
         $number_for_sort = Post::query()
-        ->orderBy('number', 'desc')
+        ->orderBy('id', 'desc')
         ->take(1)->first()->value('number');
 
         $previosTime = $startTime;
