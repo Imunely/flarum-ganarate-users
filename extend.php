@@ -12,6 +12,8 @@
 namespace Imynely\GenerateUsers;
 
 use Imynely\GenerateUsers\Api\Controllers\GenerateUsersController;
+use Imynely\GenerateUsers\Api\Controllers\GetDiscussionController;
+use Imynely\GenerateUsers\Api\Controllers\GeneratePostsController;
 use Flarum\Extend;
 
 return [
@@ -23,5 +25,7 @@ return [
         ->css(__DIR__.'/less/admin.less'),
     new Extend\Locales(__DIR__.'/locale'),
     (new Extend\Routes('api'))
-        ->post('/generate-users', 'generate-users', GenerateUsersController::class),
+        ->post('/generate-users', 'generate-users', GenerateUsersController::class)
+        ->get('/getDiscussion', 'getDiscussion', GetDiscussionController::class)
+        ->post('/generatePosts', 'generatePosts', GeneratePostsController::class),
 ];
