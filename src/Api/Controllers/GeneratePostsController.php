@@ -40,6 +40,16 @@ class GeneratePostsController implements RequestHandlerInterface
 
         $posts = $this->generateReviews($count, $discussion_id, $randomReviews);
 
+        $lastPostId = Post::query()->where('discussion_id', $discussion_id)->orderBy('id', 'desc')->limit(1)->value('id');
+        $postCount = Post::query()->where('discussion_id', $discussion_id)->count();
+
+        Discussion::query()->where('id', $discussion_id)->update(
+            [
+                'comment_count' => $postCount,
+                'last_post_id' => $lastPostId
+            ]
+        );
+
         return new JsonResponse(['posts' => $posts]);
     }
 
@@ -47,15 +57,15 @@ class GeneratePostsController implements RequestHandlerInterface
     {
         $posts = [];
 
-        $startTime = Carbon::parse(Discussion::query()->where('id', $discussion_id)->orderBy('id', 'desc')->first()->value('created_at'));
+        $startTime = Carbon::parse(Discussion::query()->where('id', $discussion_id)->orderBy('id', 'desc')->limit(1)->value('created_at'));
 
         if (Post::query()->where('discussion_id', $discussion_id)->exists()) {
-            $startTime = Carbon::parse(Post::query()->where('discussion_id', $discussion_id)->orderBy('id', 'desc')->first()->value('created_at'));
+            $startTime = Carbon::parse(Post::query()->where('discussion_id', $discussion_id)->orderBy('id', 'desc')->limit(1)->value('created_at'));
         }
 
         $author_id = Discussion::query()->where('id', $discussion_id)->first()->value('user_id');
 
-        $fake_IP = rand(0, 255) . rand(0, 255) . rand(0, 255) . rand(0, 255);
+        $fake_IP = rand(0, 255) . '.' . rand(0, 255) . '.' . rand(0, 255) . '.' . rand(0, 255);
 
         $users = User::query()
         ->whereNotIn('id', [1, $author_id])
@@ -65,12 +75,15 @@ class GeneratePostsController implements RequestHandlerInterface
         ->toArray();
 
         $number_for_sort = Post::query()
-        ->sort('number', 'desc')
-        ->take(1)->first()->value('number');
+        ->where('discussion_id', $discussion_id)
+        ->orderByDesc('number')
+        ->limit(1)->value('number');
 
         $previosTime = $startTime;
 
         for ($i = 0; $i < $count; $i++) {
+
+            ++$number_for_sort;
 
             $reviewText = '<t><p>' . $Reviews[$i] . '</p></t>'; // тут в теги оберунть для отображения
 
@@ -79,7 +92,7 @@ class GeneratePostsController implements RequestHandlerInterface
 
 
             $post = [
-                'number' => ++$number_for_sort,
+                'number' => $number_for_sort,
                 'discussion_id' => $discussion_id,
                 'created_at' => $newTime,
                 'user_id' => $users[$i], // Рандом с таблицы юзерс, но не админ и не автор поста
@@ -95,7 +108,7 @@ class GeneratePostsController implements RequestHandlerInterface
 
         $this->bulkInsertPosts($posts);
 
-        return $users;
+        return $posts;
     }
 
     private function bulkInsertPosts(array $posts): void
